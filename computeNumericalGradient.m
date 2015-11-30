@@ -6,6 +6,8 @@ function numgrad = computeNumericalGradient(J, theta)
   
 % Initialize numgrad with zeros
 numgrad = zeros(size(theta));
+n=size(theta,1);
+epsilon = 1e-4;
 
 %% ---------- YOUR CODE HERE --------------------------------------
 % Instructions: 
@@ -19,10 +21,11 @@ numgrad = zeros(size(theta));
 % Hint: You will probably want to compute the elements of numgrad one at a time. 
 
 
-
-
-
-
+for i=1:n
+  one_hot = zeros(size(theta));
+  one_hot(i) = epsilon;
+  numgrad(i) = ( J(theta + one_hot) - J(theta - one_hot) )/(2*epsilon);
+end
 
 
 %% ---------------------------------------------------------------

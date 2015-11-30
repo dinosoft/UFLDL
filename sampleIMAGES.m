@@ -4,6 +4,9 @@ function patches = sampleIMAGES()
 
 load IMAGES;    % load images from disk 
 
+%images = loadMNISTImages('train-images.idx3-ubyte');
+%labels = loadMNISTLabels('train-labels.idx1-ubyte');
+
 patchsize = 8;  % we'll use 8x8 patches 
 numpatches = 10000;
 
@@ -24,7 +27,13 @@ patches = zeros(patchsize*patchsize, numpatches);
 %  patch corresponding to the pixels in the block (21,21) to (30,30) of
 %  Image 1
 
-
+for loop=1:numpatches
+  i = randi(505);
+  j = randi(505);
+  k = randi(10);
+  tmp_patches = IMAGES(i:i+7, j:j+7, k);
+  patches(:, loop) = tmp_patches(:);
+end
 
 
 

@@ -42,6 +42,59 @@ b2grad = zeros(size(b2));
 % the gradient descent update to W1 would be W1 := W1 - alpha * W1grad, and similarly for W2, b1, b2. 
 % 
 
+%n= 10000;
+n=size(data,2);
+
+
+%w1   H * 64
+%w2   64 * H
+
+% H * N 
+z2 = W1 * data + repmat( b1, 1, n) ;
+a2 = sigmoid(z2);
+
+% 64 * N
+z3 = W2 * a2 + repmat( b2, 1, n);
+a3 = sigmoid(z3);
+
+%m=size(data,2);
+
+dif = data - a3;
+cost = 1/(n)* 1/2 * sum ( sum (dif .^ 2 , 1) );
+cost = cost + lambda/2 * ( sum(W1(:).^2) + sum(W2(:).^2) );
+
+p_hat = 1/n * sum(a2, 2);
+cost = cost + beta * sum( ...
+  sparsityParam *log(sparsityParam./p_hat) + ...
+  (1-sparsityParam) *log( (1-sparsityParam)./(1-p_hat)) );
+
+
+%64 * N
+delta3= -( data - a3 ) .* a3 .* (1 - a3);
+%delta3= -( data - a3 ) .* sigmoid(z3) .* (1-sigmoid(z3) );
+
+p_hat = 1/n * sum(a2, 2);
+p_hat = repmat(p_hat, 1, n);
+
+%H * 64 , 64 * N = H * N
+delta2=  ( W2' * delta3 + ...
+           beta * ( -sparsityParam./p_hat + (1-sparsityParam) ./ (1-p_hat)  ) ...
+           ) ...
+           .* a2 .* (1 - a2);
+
+%64
+b2grad = sum(delta3,2 ) /n;
+
+%H
+b1grad = sum(delta2,2 ) /n;
+
+% should 64 * H 
+%64 * N , N * H 
+W2grad = 1/n * delta3 * a2' + lambda * W2;
+
+%H * N ,    N * 64
+W1grad = 1/n * delta2 * data' + lambda * W1;
+
 
 
 
