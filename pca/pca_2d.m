@@ -20,8 +20,11 @@ title('Raw data');
 
 % -------------------- YOUR CODE HERE -------------------- 
 u = zeros(size(x, 1)); % You need to compute this
-
-
+avg = mean(x, 2);
+size(avg)
+x = x - repmat( avg, 1, size(x,2) );
+sigma = x * x' /size(x,2);
+[u,s,v] =svd(sigma);
 % -------------------------------------------------------- 
 hold on
 plot([0 u(1,1)], [0 u(2,1)]);
@@ -37,7 +40,7 @@ hold off
 % -------------------- YOUR CODE HERE -------------------- 
 xRot = zeros(size(x)); % You need to compute this
 
-
+xRot = u' * x ;
 % -------------------------------------------------------- 
 
 % Visualise the covariance matrix. You should see a line across the
@@ -55,8 +58,10 @@ title('xRot');
 % -------------------- YOUR CODE HERE -------------------- 
 k = 1; % Use k = 1 and project the data onto the first eigenbasis
 xHat = zeros(size(x)); % You need to compute this
+xRot2=zeros(size(x));
+xRot2(1:k, :) = u(:, 1:k)' * x ;
 
-
+xHat = u'* xRot2;
 
 % -------------------------------------------------------- 
 figure(3);
@@ -73,7 +78,7 @@ epsilon = 1e-5;
 xPCAWhite = zeros(size(x)); % You need to compute this
 
 
-
+xPCAWhite = diag(1./sqrt(diag(s) + epsilon)) * u' * x;
 
 % -------------------------------------------------------- 
 figure(4);
@@ -87,7 +92,7 @@ title('xPCAWhite');
 % -------------------- YOUR CODE HERE -------------------- 
 xZCAWhite = zeros(size(x)); % You need to compute this
 
-
+xZCAWhite = u * diag(1./sqrt(diag(s) + epsilon)) * u' * x;
 % -------------------------------------------------------- 
 figure(5);
 scatter(xZCAWhite(1, :), xZCAWhite(2, :));
