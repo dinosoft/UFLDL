@@ -27,6 +27,8 @@ beta = 5;              % weight of sparsity penalty term
 
 epsilon = 0.1;	       % epsilon for ZCA whitening
 
+%use other function in previous ex
+addpath ../
 %%======================================================================
 %% STEP 1: Create and modify sparseAutoencoderLinearCost.m to use a linear decoder,
 %          and check gradients
@@ -112,7 +114,7 @@ displayColorNetwork(patches(:, 1:100));
 theta = initializeParameters(hiddenSize, visibleSize);
 
 % Use minFunc to minimize the function
-addpath minFunc/
+addpath ../minFunc/
 
 options = struct;
 options.Method = 'lbfgs'; 
