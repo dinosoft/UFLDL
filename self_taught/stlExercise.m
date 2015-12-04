@@ -23,6 +23,9 @@ lambda = 3e-3;       % weight decay parameter
 beta = 3;            % weight of sparsity penalty term   
 maxIter = 400;
 
+%use other function in previous ex
+addpath ../
+addpath ../softmax
 %% ======================================================================
 %  STEP 1: Load data from the MNIST database
 %
@@ -31,8 +34,8 @@ maxIter = 400;
 %  change it.
 
 % Load MNIST database files
-mnistData   = loadMNISTImages('mnist/train-images-idx3-ubyte');
-mnistLabels = loadMNISTLabels('mnist/train-labels-idx1-ubyte');
+mnistData   = loadMNISTImages('../mnist/train-images.idx3-ubyte');
+mnistLabels = loadMNISTLabels('../mnist/train-labels.idx1-ubyte');
 
 % Set Unlabeled Set (All Images)
 
@@ -45,7 +48,7 @@ trainSet = labeledSet(1:numTrain);
 testSet  = labeledSet(numTrain+1:end);
 
 unlabeledData = mnistData(:, unlabeledSet);
-
+unlabeledData  = unlabeledData(:, 1:5000);
 trainData   = mnistData(:, trainSet);
 trainLabels = mnistLabels(trainSet)' + 1; % Shift Labels to the Range 1-5
 
@@ -69,16 +72,31 @@ theta = initializeParameters(hiddenSize, inputSize);
 %  Find opttheta by running the sparse autoencoder on
 %  unlabeledTrainingImages
 
-opttheta = theta; 
+%opttheta = theta; 
 
 
+addpath ../minFunc/
+options.Method = 'lbfgs'; % Here, we use L-BFGS to optimize our cost
+                          % function. Generally, for minFunc to work, you
+                          % need a function pointer with two outputs: the
+                          % function value and the gradient. In our problem,
+                          % sparseAutoencoderCost.m satisfies this.
+options.maxIter = maxIter;	  % Maximum number of iterations of L-BFGS to run 
+options.display = 'on';
+options.Corr=9;
 
+new = true;
+if new
+[opttheta, cost] = minFunc( @(p) sparseAutoencoderCost(p, ...
+                                   inputSize, hiddenSize, ...
+                                   lambda, sparsityParam, ...
+                                   beta, unlabeledData), ...
+                              theta, options);
 
-
-
-
-
-
+save   opttheta
+else
+load opttheta
+end
 %% -----------------------------------------------------
                           
 % Visualize weights
@@ -110,7 +128,11 @@ softmaxModel = struct;
 % You need to compute softmaxModel using softmaxTrain on trainFeatures and
 % trainLabels
 
+lambda = 1e-4
 
+options.maxIter = 100;
+softmaxModel = softmaxTrain(hiddenSize, numLabels, lambda, ...
+                            trainFeatures, trainLabels, options);
 
 
 
@@ -131,7 +153,7 @@ softmaxModel = struct;
 
 
 
-
+[pred] = softmaxPredict(softmaxModel, testFeatures);
 
 
 
