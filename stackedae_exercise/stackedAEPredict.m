@@ -25,9 +25,16 @@ stack = params2stack(theta(hiddenSize*numClasses+1:end), netconfig);
 %                from 1.
 
 
+n= size(data, 2);
+
+z2 = stack{1}.w * data + repmat ( stack{1}.b, 1, n );
+a2 = sigmoid(z2);
+
+z3 = stack{2}.w * a2 + repmat ( stack{2}.b, 1, n );
+a3 = sigmoid(z3);
 
 
-
+[ v  pred] = max ( softmaxTheta * a3, [], 1 );
 
 
 

@@ -7,12 +7,13 @@ function [] = checkStackedAECost()
 %
 
 %% Setup random data / small model
+numCases = 6;
 inputSize = 4;
 hiddenSize = 5;
 lambda = 0.01;
-data   = randn(inputSize, 5);
-labels = [ 1 2 1 2 1 ];
-numClasses = 2;
+data   = randn(inputSize, numCases);
+labels = [ 3 2 1 4 5 1 ];
+numClasses = 5;
 
 stack = cell(2,1);
 stack{1}.w = 0.1 * randn(3, inputSize);

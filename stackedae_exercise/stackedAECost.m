@@ -61,16 +61,46 @@ groundTruth = full(sparse(labels, 1:M, 1));
 %                match exactly that of the size of the matrices in stack.
 %
 
+n= M;
+
+z2 = stack{1}.w * data + repmat ( stack{1}.b, 1, n );
+a2 = sigmoid(z2);
+
+z3 = stack{2}.w * a2 + repmat ( stack{2}.b, 1, n );
+a3 = sigmoid(z3);
+
+[J_grad, cost, softmaxThetaGrad] = softmaxCost2(softmaxTheta, numClasses, hiddenSize, lambda, a3, labels);
+
+
+stack_cost = 0;
+for d = 1:numel(stack)
+    stack_cost = stack_cost + sum (stack{d}.w(:) .^ 2);
+end
+
+%cost = cost + lambda /2 * stack_cost;
+
+
+delta3= -( J_grad ) .* a3 .* (1 - a3);
+
+%H * 64 , 64 * N = H * N
+delta2=  (  stack{2}.w' * delta3 )    .* a2 .* (1 - a2);
 
 
 
+stackgrad{2}.b = sum(delta3,2 ) /n;
+
+%H
+stackgrad{1}.b = sum(delta2,2 ) /n;
+
+% should 64 * H 
+%64 * N , N * H 
+stackgrad{2}.w = 1/n * delta3 * a2';
+ %+ lambda * stack{2}.w;
 
 
-
-
-
-
-
+%H * N ,    N * 64
+stackgrad{1}.w = 1/n * delta2 * data' ;
+%+ lambda * stack{1}.w;
 
 
 
