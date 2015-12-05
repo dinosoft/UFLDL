@@ -39,9 +39,8 @@ convolvedFeatures = zeros(numFeatures, numImages, imageDim - patchDim + 1, image
 % Precompute the matrices that will be used during the convolution. Recall
 % that you need to take into account the whitening and mean subtraction
 % steps
-
-
-
+wt = W * ZCAWhite;
+bt = b - wt * meanPatch;
 
 
 
@@ -57,8 +56,12 @@ for imageNum = 1:numImages
 
       % Obtain the feature (patchDim x patchDim) needed during the convolution
       % ---- YOUR CODE HERE ----
-      feature = zeros(8,8); % You should replace this
-      
+	  % 1 * 64
+	  L=(channel-1) *(patchDim^2) +1;
+	  R=(channel) * (patchDim^2);
+      feature = reshape(wt(featureNum, L:R), patchDim, patchDim);
+	  %zeros(8,8); % You should replace this
+      %feature = image(:, :, channel, channel, imageNum)
       
       
       
@@ -74,7 +77,7 @@ for imageNum = 1:numImages
       % be sure to do a 'valid' convolution
       % ---- YOUR CODE HERE ----
 
-      
+      convolvedImage = convolvedImage + conv2(im, feature, 'valid');
       
       
       % ------------------------
@@ -86,8 +89,7 @@ for imageNum = 1:numImages
     % ---- YOUR CODE HERE ----
 
     
-    
-    
+    convolvedImage = sigmoid(convolvedImage + bt(featureNum));
     % ------------------------
     
     % The convolved feature is the sum of the convolved values for all channels
@@ -98,3 +100,6 @@ end
 
 end
 
+function x=sigmoid(x)
+	x= 1 ./ (1+exp(-x) );
+end

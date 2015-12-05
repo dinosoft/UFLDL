@@ -26,6 +26,9 @@ epsilon = 0.1;	       % epsilon for ZCA whitening
 
 poolDim = 19;          % dimension of pooling region
 
+addpath ../linear_decoder
+addpath ../self_taught
+addpath ../softmax
 %%======================================================================
 %% STEP 1: Train a sparse autoencoder (with a linear decoder) to learn 
 %  features from color patches. If you have completed the linear decoder
@@ -41,7 +44,7 @@ poolDim = 19;          % dimension of pooling region
 optTheta =  zeros(2*hiddenSize*visibleSize+hiddenSize+visibleSize, 1);
 ZCAWhite =  zeros(visibleSize, visibleSize);
 meanPatch = zeros(visibleSize, 1);
-
+load  STL10Features.mat
 
 % --------------------------------------------------------------------
 
@@ -144,7 +147,7 @@ end
 %  convolution and pooling 50 features at a time to avoid running out of
 %  memory. Reduce this number if necessary
 
-stepSize = 50;
+stepSize = 20;
 assert(mod(hiddenSize, stepSize) == 0, 'stepSize should divide hiddenSize');
 
 load stlTrainSubset.mat % loads numTrainImages, trainImages, trainLabels
